@@ -1,6 +1,33 @@
 import yahooFinance from 'yahoo-finance2';
-import type { HistoricalRowRaw } from 'yahoo-finance2/dist/esm/src/modules/historical';
-import type { Quote } from 'yahoo-finance2/dist/esm/src/modules/quote';
+
+type Quote = {
+  symbol: string;
+  regularMarketPrice?: number;
+  regularMarketChange?: number;
+  regularMarketChangePercent?: number;
+  regularMarketDayHigh?: number;
+  regularMarketDayLow?: number;
+  regularMarketOpen?: number;
+  regularMarketPreviousClose?: number;
+  fiftyDayAverage?: number;
+  twoHundredDayAverage?: number;
+  longName?: string;
+  shortName?: string;
+  marketCap?: number;
+  currency?: string;
+  sector?: string;
+  industry?: string;
+};
+
+type HistoricalRowRaw = {
+  date: Date;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+  adjclose?: number;
+};
 import { calculateRSI, calculateSMA } from './technicalIndicators';
 
 // No API key needed for Yahoo Finance
