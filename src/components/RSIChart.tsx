@@ -49,15 +49,16 @@ export function RSIChart({ data, title = 'RSI (14)' }: RSIChartProps) {
                 if (active && payload && payload.length) {
                   const data = payload[0].payload;
                   let status = 'Neutral';
-                  if (data.rsi >= 70) status = 'Overbought';
-                  if (data.rsi <= 30) status = 'Oversold';
+                  const rsiValue = data.rsi ?? 0;
+                  if (rsiValue >= 70) status = 'Overbought';
+                  if (rsiValue <= 30) status = 'Oversold';
                   
                   return (
                     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-2 rounded shadow">
                       <p className="text-sm text-gray-500 dark:text-gray-400">{data.date}</p>
                       <p className="text-sm">RSI: {(data.rsi ?? 0).toFixed(2)}</p>
                       <p className="text-sm font-medium" style={{
-                        color: data.rsi >= 70 ? '#ef4444' : data.rsi <= 30 ? '#22c55e' : '#6b7280'
+                        color: rsiValue >= 70 ? '#ef4444' : rsiValue <= 30 ? '#22c55e' : '#6b7280'
                       }}>
                         {status}
                       </p>
