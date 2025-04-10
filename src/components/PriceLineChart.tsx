@@ -19,8 +19,8 @@ interface PriceLineChartProps {
 export function PriceLineChart({ data, title = 'Price Trend' }: PriceLineChartProps) {
   const chartData = data.historical.map((item, index) => ({
     date: data.dates[index],
-    price: item.close,
-    sma20: data.sma20[index],
+    price: item.close ?? 0,
+    sma20: data.sma20[index] ?? 0,
   }));
 
   return (

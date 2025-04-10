@@ -5,15 +5,15 @@ import { calculateRSI, calculateSMA } from './technicalIndicators';
 
 export interface StockQuote {
   symbol: string;
-  regularMarketPrice: number;
-  regularMarketChange: number;
-  regularMarketChangePercent: number;
-  regularMarketDayHigh: number;
-  regularMarketDayLow: number;
-  regularMarketOpen: number;
-  regularMarketPreviousClose: number;
-  fiftyDayAverage: number;
-  twoHundredDayAverage: number;
+  regularMarketPrice?: number;
+  regularMarketChange?: number;
+  regularMarketChangePercent?: number;
+  regularMarketDayHigh?: number;
+  regularMarketDayLow?: number;
+  regularMarketOpen?: number;
+  regularMarketPreviousClose?: number;
+  fiftyDayAverage?: number;
+  twoHundredDayAverage?: number;
 }
 
 export interface CompanyProfile {
@@ -28,11 +28,11 @@ export interface CompanyProfile {
 
 export interface HistoricalData {
   date: Date;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
+  open?: number;
+  high?: number;
+  low?: number;
+  close?: number;
+  volume?: number;
 }
 
 export interface ProcessedStockData {
