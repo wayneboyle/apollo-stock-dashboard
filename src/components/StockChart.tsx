@@ -28,7 +28,7 @@ export function StockChart({ dates = [], prices = [], isLoading = false }: Stock
   console.log('StockChart props:', { dates, prices, isLoading });
   const data = dates.length > 0 ? dates.map((date, index) => ({
     date,
-    price: prices[index],
+    price: prices[index] ?? 0,
   })) : mockData;
 
   const yAxisDomain = dates.length > 0
@@ -72,7 +72,7 @@ export function StockChart({ dates = [], prices = [], isLoading = false }: Stock
               <YAxis
                 stroke="#666"
                 style={{ fontSize: '12px' }}
-                tickFormatter={(value) => `$${value.toFixed(2)}`}
+                tickFormatter={(value) => `$${(value ?? 0).toFixed(2)}`}
                 domain={yAxisDomain}
               />
               <Tooltip

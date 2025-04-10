@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { CandlestickChart } from '@/components/CandlestickChart';
@@ -16,7 +16,11 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
+    if (!symbol) {
+      setError('Please enter a stock symbol');
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -35,17 +39,25 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [symbol]); // Add symbol as a dependency since it's used in fetchData
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     setSymbol(inputSymbol.toUpperCase());
-    fetchData();
-  };
+  }, [inputSymbol]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (symbol) {
+      fetchData();
+    }
+  }, [fetchData, symbol]);
+
+  // Trigger fetchData when symbol changes
+  useEffect(() => {
+    if (symbol) {
+      fetchData();
+    }
+  }, [symbol, fetchData]);
 
   return (
     <main className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto">

@@ -42,7 +42,7 @@ export function PriceLineChart({ data, title = 'Price Trend' }: PriceLineChartPr
               stroke="#6b7280"
               style={{ fontSize: '12px' }}
               tickLine={false}
-              tickFormatter={(value) => `$${value.toFixed(2)}`}
+              tickFormatter={(value) => `$${(value ?? 0).toFixed(2)}`}
               domain={['dataMin', 'dataMax']}
             />
             <Tooltip
