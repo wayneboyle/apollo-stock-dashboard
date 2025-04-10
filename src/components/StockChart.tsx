@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CSSProperties } from 'react';
 import {
   LineChart,
@@ -9,7 +8,6 @@ import {
   Tooltip,
   ResponsiveContainer
 } from 'recharts';
-import { useMemo } from 'react';
 
 interface StockChartProps {
   dates: string[];
