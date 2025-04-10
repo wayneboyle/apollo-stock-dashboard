@@ -24,7 +24,6 @@ export function StockCard({ quote, profile, isLoading = false }: StockCardProps)
     );
   }
 
-  const marketChange = quote.regularMarketChange ?? 0;
   const isPositiveChange = (quote.regularMarketChange ?? 0) >= 0;
   const changeColor = isPositiveChange ? 'text-green-600' : 'text-red-600';
   const ChangeIcon = isPositiveChange ? ArrowUpIcon : ArrowDownIcon;
