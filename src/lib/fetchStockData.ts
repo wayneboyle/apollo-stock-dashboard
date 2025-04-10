@@ -20,10 +20,10 @@ export interface CompanyProfile {
   longName: string;
   symbol: string;
   logo_url?: string;
-  marketCap: number;
-  currency: string;
-  sector: string;
-  industry: string;
+  marketCap?: number;
+  currency?: string;
+  sector?: string;
+  industry?: string;
 }
 
 export interface HistoricalData {
@@ -59,10 +59,10 @@ export const fetchCompanyProfile = async (symbol: string): Promise<CompanyProfil
       longName: quote.longName || quote.shortName || symbol,
       symbol: quote.symbol,
       logo_url: undefined, // Yahoo Finance API doesn't provide logos
-      marketCap: quote.marketCap,
-      currency: quote.currency,
-      sector: quote.sector || 'N/A',
-      industry: quote.industry || 'N/A',
+      marketCap: quote.marketCap || 0, // Default to 0 if undefined
+      currency: quote.currency || 'USD', // Default to USD if undefined
+      sector: (quote as any).sector || 'N/A',
+      industry: (quote as any).industry || 'N/A',
     };
   } catch (error) {
     console.error('Error fetching company profile:', error);
