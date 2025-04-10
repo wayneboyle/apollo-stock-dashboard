@@ -1,4 +1,4 @@
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance, { Quote, HistoricalRowRaw } from 'yahoo-finance2';
 import { calculateRSI, calculateSMA } from './technicalIndicators';
 
 // No API key needed for Yahoo Finance
@@ -44,8 +44,8 @@ export interface ProcessedStockData {
 
 export const fetchStockQuote = async (symbol: string): Promise<StockQuote> => {
   try {
-    const quote = await yahooFinance.quote(symbol);
-    return quote as StockQuote;
+    const quote = await yahooFinance.quote(symbol) as Quote;
+    return quote as unknown as StockQuote;
   } catch (error) {
     console.error('Error fetching quote:', error);
     throw error;
@@ -53,20 +53,29 @@ export const fetchStockQuote = async (symbol: string): Promise<StockQuote> => {
 };
 
 export const fetchCompanyProfile = async (symbol: string): Promise<CompanyProfile> => {
+  const defaultProfile: CompanyProfile = {
+    longName: 'N/A',
+    symbol: symbol,
+    logo_url: undefined,
+    marketCap: 0,
+    currency: 'USD',
+    sector: 'N/A',
+    industry: 'N/A',
+  };
   try {
-    const quote = await yahooFinance.quote(symbol);
+    const quote = await yahooFinance.quote(symbol) as Quote;
     return {
       longName: quote.longName || quote.shortName || symbol,
       symbol: quote.symbol,
       logo_url: undefined, // Yahoo Finance API doesn't provide logos
       marketCap: quote.marketCap || 0, // Default to 0 if undefined
       currency: quote.currency || 'USD', // Default to USD if undefined
-      sector: (quote as any).sector || 'N/A',
-      industry: (quote as any).industry || 'N/A',
+      sector: typeof quote.sector === 'string' ? quote.sector : 'N/A',
+      industry: typeof quote.industry === 'string' ? quote.industry : 'N/A',
     };
   } catch (error) {
     console.error('Error fetching company profile:', error);
-    throw error;
+    return defaultProfile;
   }
 };
 
@@ -77,9 +86,9 @@ export const fetchHistoricalData = async (symbol: string): Promise<ProcessedStoc
     startDate.setFullYear(startDate.getFullYear() - 1);
 
     const queryOptions = { period1: startDate, period2: endDate };
-    const result = await yahooFinance.historical(symbol, queryOptions);
+    const result = await yahooFinance.historical(symbol, queryOptions) as HistoricalRowRaw[];
 
-    const historical = result.map(item => ({
+    const historical = (result ?? []).map(item => ({
       date: item.date,
       open: item.open,
       high: item.high,
@@ -88,12 +97,13 @@ export const fetchHistoricalData = async (symbol: string): Promise<ProcessedStoc
       volume: item.volume,
     }));
 
-    const closePrices = historical.map(item => item.close);
+    const closePrices = historical.map(item => item.close ?? 0);
     const sma20 = calculateSMA(closePrices, 20);
     const rsi14 = calculateRSI(closePrices, 14);
-    const dates = historical.map(item => 
-      item.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-    );
+    const dates = historical.map(item => {
+      if (!item?.date) return 'N/A';
+      return item.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    });
 
     return {
       historical,
