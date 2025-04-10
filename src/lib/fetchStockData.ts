@@ -1,4 +1,6 @@
-import yahooFinance, { Quote, HistoricalRowRaw } from 'yahoo-finance2';
+import yahooFinance from 'yahoo-finance2';
+import type { HistoricalRowRaw } from 'yahoo-finance2/dist/esm/src/modules/historical';
+import type { Quote } from 'yahoo-finance2/dist/esm/src/modules/quote';
 import { calculateRSI, calculateSMA } from './technicalIndicators';
 
 // No API key needed for Yahoo Finance
