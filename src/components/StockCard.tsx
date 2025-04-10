@@ -24,14 +24,19 @@ export function StockCard({ quote, profile, isLoading = false }: StockCardProps)
     );
   }
 
-  const isPositiveChange = quote.regularMarketChange >= 0;
+  const marketChange = quote.regularMarketChange ?? 0;
+  const isPositiveChange = (quote.regularMarketChange ?? 0) >= 0;
   const changeColor = isPositiveChange ? 'text-green-600' : 'text-red-600';
   const ChangeIcon = isPositiveChange ? ArrowUpIcon : ArrowDownIcon;
 
   const calculateDayProgress = () => {
-    const range = quote.regularMarketDayHigh - quote.regularMarketDayLow;
-    const current = quote.regularMarketPrice - quote.regularMarketDayLow;
-    return (current / range) * 100;
+    const high = quote.regularMarketDayHigh ?? 0;
+    const low = quote.regularMarketDayLow ?? 0;
+    const current = quote.regularMarketPrice ?? 0;
+    const range = high - low;
+    if (range === 0) return 0;
+    const progress = current - low;
+    return (progress / range) * 100;
   };
 
   return (
@@ -52,29 +57,29 @@ export function StockCard({ quote, profile, isLoading = false }: StockCardProps)
         )}
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">${quote.regularMarketPrice.toFixed(2)}</div>
+        <div className="text-2xl font-bold">${(quote.regularMarketPrice ?? 0).toFixed(2)}</div>
         <div className={`flex items-center space-x-2 ${changeColor}`}>
           <ChangeIcon className="h-4 w-4" />
           <span>
-            ${Math.abs(quote.regularMarketChange).toFixed(2)} ({Math.abs(quote.regularMarketChangePercent).toFixed(2)}%)
+            ${Math.abs(quote.regularMarketChange ?? 0).toFixed(2)} ({Math.abs(quote.regularMarketChangePercent ?? 0).toFixed(2)}%)
           </span>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
           <div>
             <p className="text-muted-foreground">Day High</p>
-            <p className="font-medium">${quote.regularMarketDayHigh.toFixed(2)}</p>
+            <p className="font-medium">${(quote.regularMarketDayHigh ?? 0).toFixed(2)}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Day Low</p>
-            <p className="font-medium">${quote.regularMarketDayLow.toFixed(2)}</p>
+            <p className="font-medium">${(quote.regularMarketDayLow ?? 0).toFixed(2)}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Open</p>
-            <p className="font-medium">${quote.regularMarketOpen.toFixed(2)}</p>
+            <p className="font-medium">${(quote.regularMarketOpen ?? 0).toFixed(2)}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Previous Close</p>
-            <p className="font-medium">${quote.regularMarketPreviousClose.toFixed(2)}</p>
+            <p className="font-medium">${(quote.regularMarketPreviousClose ?? 0).toFixed(2)}</p>
           </div>
         </div>
         <div className="mt-4">
