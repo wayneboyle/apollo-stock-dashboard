@@ -24,13 +24,13 @@ export function StockCard({ quote, profile, isLoading = false }: StockCardProps)
     );
   }
 
-  const isPositiveChange = quote.d >= 0;
+  const isPositiveChange = quote.regularMarketChange >= 0;
   const changeColor = isPositiveChange ? 'text-green-600' : 'text-red-600';
   const ChangeIcon = isPositiveChange ? ArrowUpIcon : ArrowDownIcon;
 
   const calculateDayProgress = () => {
-    const range = quote.h - quote.l;
-    const current = quote.c - quote.l;
+    const range = quote.regularMarketDayHigh - quote.regularMarketDayLow;
+    const current = quote.regularMarketPrice - quote.regularMarketDayLow;
     return (current / range) * 100;
   };
 
@@ -38,13 +38,13 @@ export function StockCard({ quote, profile, isLoading = false }: StockCardProps)
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">
-          {profile.name} ({profile.ticker})
+          {profile.longName} ({profile.symbol})
         </CardTitle>
-        {profile.logo && (
+        {profile.logo_url && (
           <div className="relative w-8 h-8">
             <Image
-              src={profile.logo}
-              alt={`${profile.name} logo`}
+              src={profile.logo_url}
+              alt={`${profile.longName} logo`}
               fill
               className="object-contain"
             />
@@ -52,29 +52,29 @@ export function StockCard({ quote, profile, isLoading = false }: StockCardProps)
         )}
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">${quote.c.toFixed(2)}</div>
+        <div className="text-2xl font-bold">${quote.regularMarketPrice.toFixed(2)}</div>
         <div className={`flex items-center space-x-2 ${changeColor}`}>
           <ChangeIcon className="h-4 w-4" />
           <span>
-            ${Math.abs(quote.d).toFixed(2)} ({Math.abs(quote.dp).toFixed(2)}%)
+            ${Math.abs(quote.regularMarketChange).toFixed(2)} ({Math.abs(quote.regularMarketChangePercent).toFixed(2)}%)
           </span>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
           <div>
             <p className="text-muted-foreground">Day High</p>
-            <p className="font-medium">${quote.h.toFixed(2)}</p>
+            <p className="font-medium">${quote.regularMarketDayHigh.toFixed(2)}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Day Low</p>
-            <p className="font-medium">${quote.l.toFixed(2)}</p>
+            <p className="font-medium">${quote.regularMarketDayLow.toFixed(2)}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Open</p>
-            <p className="font-medium">${quote.o.toFixed(2)}</p>
+            <p className="font-medium">${quote.regularMarketOpen.toFixed(2)}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Previous Close</p>
-            <p className="font-medium">${quote.pc.toFixed(2)}</p>
+            <p className="font-medium">${quote.regularMarketPreviousClose.toFixed(2)}</p>
           </div>
         </div>
         <div className="mt-4">
