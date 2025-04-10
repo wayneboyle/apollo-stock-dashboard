@@ -51,9 +51,9 @@ export function PriceLineChart({ data, title = 'Price Trend' }: PriceLineChartPr
                   return (
                     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-2 rounded shadow">
                       <p className="text-sm text-gray-500 dark:text-gray-400">{payload[0].payload.date}</p>
-                      <p className="text-sm">Price: ${payload[0].value?.toFixed(2)}</p>
+                      <p className="text-sm">Price: ${typeof payload[0].value === 'number' ? payload[0].value.toFixed(2) : payload[0].value}</p>
                       {payload[1] && (
-                        <p className="text-sm">SMA(20): ${payload[1].value?.toFixed(2)}</p>
+                        <p className="text-sm">SMA(20): ${typeof payload[1].value === 'number' ? payload[1].value.toFixed(2) : payload[1].value}</p>
                       )}
                     </div>
                   );
