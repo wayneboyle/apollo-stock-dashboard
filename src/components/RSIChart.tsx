@@ -19,7 +19,7 @@ interface RSIChartProps {
 export function RSIChart({ data, title = 'RSI (14)' }: RSIChartProps) {
   const chartData = data.dates.map((date, index) => ({
     date,
-    rsi: data.rsi14[index],
+    rsi: data.rsi14[index] ?? 0,
   }));
 
   return (
@@ -55,7 +55,7 @@ export function RSIChart({ data, title = 'RSI (14)' }: RSIChartProps) {
                   return (
                     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-2 rounded shadow">
                       <p className="text-sm text-gray-500 dark:text-gray-400">{data.date}</p>
-                      <p className="text-sm">RSI: {data.rsi.toFixed(2)}</p>
+                      <p className="text-sm">RSI: {(data.rsi ?? 0).toFixed(2)}</p>
                       <p className="text-sm font-medium" style={{
                         color: data.rsi >= 70 ? '#ef4444' : data.rsi <= 30 ? '#22c55e' : '#6b7280'
                       }}>

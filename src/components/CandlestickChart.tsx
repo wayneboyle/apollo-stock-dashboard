@@ -20,11 +20,11 @@ interface CandlestickChartProps {
 export function CandlestickChart({ data, dates, title = 'Stock Price' }: CandlestickChartProps) {
   const formattedData = data.map((item, index) => ({
     date: dates[index],
-    open: item.open,
-    high: item.high,
-    low: item.low,
-    close: item.close,
-    color: item.close > item.open ? '#22c55e' : '#ef4444',
+    open: item.open ?? 0,
+    high: item.high ?? 0,
+    low: item.low ?? 0,
+    close: item.close ?? 0,
+    color: (item.close ?? 0) > (item.open ?? 0) ? '#22c55e' : '#ef4444',
   }));
 
   return (
@@ -46,7 +46,7 @@ export function CandlestickChart({ data, dates, title = 'Stock Price' }: Candles
               stroke="#6b7280"
               style={{ fontSize: '12px' }}
               tickLine={false}
-              tickFormatter={(value) => `$${value.toFixed(2)}`}
+              tickFormatter={(value) => `$${(value ?? 0).toFixed(2)}`}
               domain={['dataMin', 'dataMax']}
             />
             <Tooltip
@@ -56,10 +56,10 @@ export function CandlestickChart({ data, dates, title = 'Stock Price' }: Candles
                   return (
                     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-2 rounded shadow">
                       <p className="text-sm text-gray-500 dark:text-gray-400">{data.date}</p>
-                      <p className="text-sm">Open: ${data.open.toFixed(2)}</p>
-                      <p className="text-sm">High: ${data.high.toFixed(2)}</p>
-                      <p className="text-sm">Low: ${data.low.toFixed(2)}</p>
-                      <p className="text-sm">Close: ${data.close.toFixed(2)}</p>
+                      <p className="text-sm">Open: ${(data.open ?? 0).toFixed(2)}</p>
+                      <p className="text-sm">High: ${(data.high ?? 0).toFixed(2)}</p>
+                      <p className="text-sm">Low: ${(data.low ?? 0).toFixed(2)}</p>
+                      <p className="text-sm">Close: ${(data.close ?? 0).toFixed(2)}</p>
                     </div>
                   );
                 }

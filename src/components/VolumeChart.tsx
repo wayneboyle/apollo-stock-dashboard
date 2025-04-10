@@ -19,10 +19,12 @@ interface VolumeChartProps {
 export function VolumeChart({ data, dates, title = 'Trading Volume' }: VolumeChartProps) {
   const chartData = data.map((item, index) => ({
     date: dates[index],
-    volume: item.volume,
+    volume: item.volume ?? 0,
   }));
 
-  const formatVolume = (value: number) => {
+  const formatVolume = (value: number | undefined) => {
+    if (value === undefined) return '0';
+
     if (value >= 1_000_000_000) {
       return `${(value / 1_000_000_000).toFixed(1)}B`;
     }
