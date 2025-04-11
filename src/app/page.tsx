@@ -15,8 +15,12 @@ export default function Home() {
   const [stockData, setStockData] = useState<ProcessedStockData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState(() => {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() - 1);
+    return date.toISOString().split('T')[0];
+  });
+  const [endDate, setEndDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [dateRange, setDateRange] = useState<{ start: string; end: string } | null>(null);
 
   const fetchData = useCallback(async () => {
@@ -64,8 +68,10 @@ export default function Home() {
   useEffect(() => {
     if (symbol) {
       fetchData();
+      // Set initial date range
+      setDateRange({ start: startDate, end: endDate });
     }
-  }, [symbol, fetchData]);
+  }, [symbol, fetchData, startDate, endDate]);
 
   return (
     <main className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto">
