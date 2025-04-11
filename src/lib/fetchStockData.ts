@@ -131,7 +131,7 @@ export const fetchHistoricalData = async (symbol: string): Promise<ProcessedStoc
     const rsi14 = calculateRSI(closePrices, 14);
     const dates = historical.map(item => {
       if (!item?.date) return 'N/A';
-      return item.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      return item.date.toISOString().split('T')[0];
     });
 
     return {

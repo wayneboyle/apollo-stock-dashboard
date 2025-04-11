@@ -14,11 +14,31 @@ interface VolumeChartProps {
   data: HistoricalData[];
   title?: string;
   dates: string[];
+  dateRange?: { start: string; end: string } | null;
 }
 
-export function VolumeChart({ data, dates, title = 'Trading Volume' }: VolumeChartProps) {
-  const chartData = data.map((item, index) => ({
-    date: dates[index],
+export function VolumeChart({ data, dates, title = 'Trading Volume', dateRange }: VolumeChartProps) {
+  const startDate = dateRange ? new Date(dateRange.start) : null;
+  const endDate = dateRange ? new Date(dateRange.end) : null;
+  startDate?.setHours(0, 0, 0, 0);
+  endDate?.setHours(23, 59, 59, 999);
+
+  const filteredIndexes = dateRange
+    ? dates.reduce<number[]>((acc, date, index) => {
+        const currentDate = new Date(date);
+        currentDate.setHours(0, 0, 0, 0);
+        if (startDate && endDate && currentDate >= startDate && currentDate <= endDate) {
+          acc.push(index);
+        }
+        return acc;
+      }, [])
+    : dates.map((_, index) => index);
+
+  const filteredData = filteredIndexes.map(index => data[index]);
+  const filteredDates = filteredIndexes.map(index => dates[index]);
+
+  const chartData = filteredData.map((item, index) => ({
+    date: filteredDates[index],
     volume: item.volume ?? 0,
   }));
 
@@ -38,22 +58,20 @@ export function VolumeChart({ data, dates, title = 'Trading Volume' }: VolumeCha
   };
 
   return (
-    <Card className="w-full h-[400px]">
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
+    <div className="w-full h-[400px]">
+      <div className="chart-title">{title}</div>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 40 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
             <XAxis
               dataKey="date"
-              stroke="#6b7280"
+              stroke="var(--foreground)"
               style={{ fontSize: '12px' }}
               tickLine={false}
             />
             <YAxis
-              stroke="#6b7280"
+              stroke="var(--foreground)"
               style={{ fontSize: '12px' }}
               tickLine={false}
               tickFormatter={formatVolume}
@@ -63,8 +81,8 @@ export function VolumeChart({ data, dates, title = 'Trading Volume' }: VolumeCha
                 if (active && payload && payload.length) {
                   const data = payload[0].payload;
                   return (
-                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-2 rounded shadow">
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{data.date}</p>
+                    <div className="bg-[var(--card)] border border-[var(--border)] p-2 rounded shadow text-[var(--foreground)]">
+                      <p className="text-sm opacity-70">{data.date}</p>
                       <p className="text-sm">Volume: {formatVolume(data.volume)}</p>
                     </div>
                   );
@@ -74,12 +92,12 @@ export function VolumeChart({ data, dates, title = 'Trading Volume' }: VolumeCha
             />
             <Bar
               dataKey="volume"
-              fill="#3b82f6"
+              fill="var(--chart-volume)"
               opacity={0.8}
             />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
-    </Card>
+    </div>
   );
 }

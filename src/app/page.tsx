@@ -15,6 +15,9 @@ export default function Home() {
   const [stockData, setStockData] = useState<ProcessedStockData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [dateRange, setDateRange] = useState<{ start: string; end: string } | null>(null);
 
   const fetchData = useCallback(async () => {
     if (!symbol) {
@@ -32,6 +35,11 @@ export default function Home() {
       if (data.error) {
         throw new Error(data.error);
       }
+      console.log('API Response Data:', {
+        dates: data.dates.slice(0, 5),
+        sampleDate: new Date(data.dates[0]).toISOString(),
+        totalDates: data.dates.length
+      });
       setStockData(data);
     } catch (err) {
       setError('Error fetching stock data. Please check the symbol and try again.');
@@ -63,7 +71,12 @@ export default function Home() {
     <main className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-6">Stock Analysis Dashboard</h1>
-        <form onSubmit={handleSubmit} className="flex gap-4 items-center">
+        {stockData && (
+          <div className="text-sm mb-4 text-muted-foreground">
+            Available data range: {stockData.dates[0]} to {stockData.dates[stockData.dates.length - 1]}
+          </div>
+        )}
+        <form onSubmit={handleSubmit} className="flex gap-4 items-center mb-4">
           <Input
             type="text"
             value={inputSymbol}
@@ -75,6 +88,48 @@ export default function Home() {
             {loading ? 'Loading...' : 'Analyze'}
           </Button>
         </form>
+        <div className="date-range">
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            placeholder="Start Date"
+          />
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            placeholder="End Date"
+          />
+          <Button
+            onClick={() => {
+              if (startDate && endDate && stockData) {
+                const inputStart = new Date(startDate);
+                const inputEnd = new Date(endDate);
+                const firstDataDate = new Date(stockData.dates[0]);
+                const lastDataDate = new Date(stockData.dates[stockData.dates.length - 1]);
+
+                // Check if selected range overlaps with available data
+                if (inputEnd < firstDataDate || inputStart > lastDataDate) {
+                  setError(`Please select dates between ${stockData.dates[0]} and ${stockData.dates[stockData.dates.length - 1]}`);
+                  return;
+                }
+
+                setError(null);
+                const startTime = Math.max(inputStart.getTime(), firstDataDate.getTime());
+                const endTime = Math.min(inputEnd.getTime(), lastDataDate.getTime());
+                
+                setDateRange({ 
+                  start: new Date(startTime).toISOString().split('T')[0],
+                  end: new Date(endTime).toISOString().split('T')[0]
+                });
+              }
+            }}
+            disabled={!startDate || !endDate}
+          >
+            Apply Date Range
+          </Button>
+        </div>
         {error && (
           <p className="mt-4 text-red-500">{error}</p>
         )}
@@ -82,24 +137,36 @@ export default function Home() {
 
       {stockData && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <CandlestickChart
-            data={stockData.historical}
-            dates={stockData.dates}
-            title={`${symbol} Price (OHLC)`}
-          />
-          <PriceLineChart
-            data={stockData}
-            title={`${symbol} Price Trend with SMA(20)`}
-          />
-          <VolumeChart
-            data={stockData.historical}
-            dates={stockData.dates}
-            title={`${symbol} Trading Volume`}
-          />
-          <RSIChart
-            data={stockData}
-            title={`${symbol} RSI(14)`}
-          />
+          <div className="chart-panel">
+            <CandlestickChart
+              data={stockData.historical}
+              dates={stockData.dates}
+              title={`${symbol} Price (OHLC)`}
+              dateRange={dateRange}
+            />
+          </div>
+          <div className="chart-panel">
+            <PriceLineChart
+              data={stockData}
+              title={`${symbol} Price Trend with SMA(20)`}
+              dateRange={dateRange}
+            />
+          </div>
+          <div className="chart-panel">
+            <VolumeChart
+              data={stockData.historical}
+              dates={stockData.dates}
+              title={`${symbol} Trading Volume`}
+              dateRange={dateRange}
+            />
+          </div>
+          <div className="chart-panel">
+            <RSIChart
+              data={stockData}
+              title={`${symbol} RSI(14)`}
+              dateRange={dateRange}
+            />
+          </div>
         </div>
       )}
     </main>
